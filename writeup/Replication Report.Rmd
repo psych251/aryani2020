@@ -1,0 +1,256 @@
+---
+title: "Replication of Affective Arousal Links Sound to Meaning by Aryani, Isbilen & Christiansen (2020, *Psychological Science*)"
+author: "Tara Srirangarajan (tarasri@stanford.edu)"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+---
+
+<!-- Replication reports should all use this template to standardize reporting across projects.  These reports will be public supplementary materials that accompany the summary report(s) of the aggregate results. -->
+
+##Introduction
+
+There are a wealth of studies investigating the mapping between pseudowords and pictorial stimuli. Evidence of sound-shape mapping has implications regarding the evolution of language, and suggests that the naming of objects might not be completely arbitrary. I aimed to replicate the results of Experiment 1 of "Affective Arousal Links Sound to Meaning" by Aryani et al. (2020), recently published in *Psychological Science*. This study examines the cognitive processes underlying the mapping of pseudowords such as "kiki" and "bouba" to pictorial stimuli. My interest in the relationship between perception and the affective system aligns well with the themes of this paper. The main goal of this paper was to investigate how words or even abstract concepts such as shapes can elicit affective responses measured by self-reported levels of arousal. 
+
+To replicate the results of Aryani et al. (2020), I administered a survey on MTurk using the pictorial stimuli provided by the authors, which is publicly available. Potential challenges included managing the quality of data collected from large online samples, as well as translating the experimental paradigm into an online format since the original study was conducted in-person. 
+
+Link to repository: https://github.com/psych251/aryani2020
+
+Link to original paper: https://github.com/psych251/aryani2020/blob/master/original_paper/aryani2020.pdf
+
+##Methods
+
+I followed the methods of the original paper as closely as possible, although the replication was conducted on MTurk.
+
+"Two groups of native-English-speaking Cornell University undergraduates participated for course credit. A total of 24 participants (14 women; age: M = 19.5 years, range = 18–21) rated the words and 28 participants (17 women; age: M = 19.7 years, range = 18–22) rated the shapes for affective arousal. The sample size was based on those used in similar rating studies of the affective arousal of words, pseudowords, or pictorial stimuli (18–30 ratings per item; e.g., Aryani, Conrad, et al., 2018; Bradley & Lang, 1994)."
+
+###Power Analysis
+
+The original effect size reported in the paper (specifically for the shape condition) was 0.92. In order to determine the sample size that is necessary to detect that same Cohen's d, I conducted the following power analysis:
+
+power.t.test (n = 20, d = 0.92)
+
+The results of the power analysis indicated that 20 subjects would be needed to achieve 81% power to detect that effect size. 
+
+###Planned Sample
+
+The planned sample size for this replication project was 20 subjects. Ethnic and racial demographic characteristics were not reported in the original paper. 
+
+###Materials
+
+"We selected previous studies investigating the bouba-kiki phenomenon by searching for the keywords “bouba kiki” on Google Scholar (https://scholar.google.com). From these studies, we selected those that used different sets of words and shapes, yielding a total of eight studies that used 29 different pairs of shapes and 45 different pairs of words. A professional male actor who was a native-English speaker recorded the stimuli. Words were spoken in a listlike manner to prevent affective prosody and recorded in a professional sound-recording booth." 
+
+For the replication project, I only used the pictorial stimuli, which are available on OSF. 
+
+###Procedure	
+
+I followed the procedure of the original paper as closely as possible:
+
+"We asked participants to rate how exciting or calming each presented image felt (shape condition) or each presented word sounded (word condition), following the instructions of previous studies (Aryani, Conrad, et al., 2018; Bradley & Lang, 1994). The order of presentation within the lists of words and shapes was randomized across participants. Importantly, we did not use the Self-Assessment Manikin (Bradley & Lang, 1994) because the shapes in this instrument could potentially cause bias (see the introduction and Fig. 1, bottom). Instead, a 5-point scale was shown on the screen, characterized by five bars of different heights from very calming (1) to very exciting (5). For the words, participants were instructed to give their ratings solely on the basis of the sound of the item and not its potential similarity to real words (for detailed instructions, see Figs. S1 and S2 in the Supplemental Material available online). Note that we used bars of increasing heights to visualize the intensity of arousal from low to high. This choice also provided a neutral counterpart to the Self-Assessment Manikin typically used to measure arousal and thus provides some continuity with that literature."
+
+###Analysis Plan
+
+I followed the analysis in the original paper (although I'll be using R):
+
+"Differences in the ratings of spiky shapes versus rounded shapes and kiki-like words versus bouba-like words were analyzed with t tests using the statistical software JMP Pro 14 (SAS Institute, 2018). For studies with more than one item in a category, we first calculated an average rating for each category and conducted the t test on the basis of the average ratings of participants."
+
+###Differences from Original Study
+
+Key differences included the recruitment of an online sample for this replication, as well as omitting the auditory stimuli (which would introduce many confounding variables due to the online nature of the replication). These differences were not anticipated to make a difference in the expected results, as the pictorial stimuli will still be randomized across participants.
+
+Another key difference was that this replication was using a 5-point Likert scale (to assess arousal), instead of the visual scale used in the original study, with bars of various heights representing arousal levels. The original scale seemed arbitrary and was not well-suited to an online format.
+
+### Methods Addendum (Post Data Collection)
+
+#### Actual Sample
+  
+Though the power analysis suggested that a sample size of 20 would be sufficient, the final sample size ended up being 25 to allow for potential exclusions. After inspecting the responses, it wasn't necessary to exclude any of the participants.
+
+#### Differences from pre-data collection methods plan
+
+None
+
+##Results
+
+The results of the original study were successfully replicated. These were the original findings: "A comparison of the arousal ratings in the shape condition revealed significantly higher arousal for spiky shapes than rounded shapes (spiky: M = 3.45, SE = 0.039; rounded: M = 2.43, SE = 0.037; p < .0001, d = 0.92)"
+
+The results of the replication were as follows: spiky: M = 3.79, SE = 0.153; rounded: M = 2.73, SE = 0.147; p < .0001, d = -3.52. A two sample t-test provided the following results: t(13) = -7.05, p < .0001.
+
+### Data preparation
+
+Following data collection, the first step was to clean the data (e.g., removing NAs) and format the data correctly in preparation for statistical analyses. The original paper did not include clear exclusion criteria.
+	
+```{r include=T}
+###Data Preparation
+
+####Load Relevant Libraries and Functions
+library(tidyverse)
+library(ggplot2)
+library(Rmisc)
+library(knitr)
+library(effsize)
+
+####Import data
+df <- read.csv("./data/aryani_data.csv", header = TRUE)
+
+#### Data exclusion / filtering
+
+df[df=="Very excited"]<-5
+df[df=="Slightly excited"]<-4
+df[df=="Neutral"]<-3
+df[df=="Slightly relaxed"]<-2
+df[df=="Very relaxed"]<-1
+
+#### Prepare data for analysis - create columns etc.
+
+#for all columns except "subject" make df longer
+df_long = df %>%
+  pivot_longer(!subject, names_to='Shape', 
+               values_to='Score')
+               
+head(df_long)
+
+#relabel data
+df1 <- df_long %>%
+    mutate(Shape_Type = case_when(grepl("bouba", Shape) ~ "rounded",
+                                  grepl("kiki", Shape) ~ "spiky")) %>% 
+    mutate(Publication = case_when(grepl("kirby", Shape) ~ "Kirby",
+                                   grepl("davis", Shape) ~ "Davis",
+                                   grepl("koehler", Shape) ~ "Kohler",
+                                   grepl("maurer", Shape) ~ "Maurer",
+                                   grepl("nielsen", Shape) ~ "Nielsen",
+                                   grepl("occelli|ocelli", Shape) ~ "Occelli",
+                                   grepl("westbury", Shape) ~ "Westbury",
+                                   grepl("rama", Shape) ~ "Rama")) %>% 
+    mutate(Score = as.numeric(Score))
+
+#df2 = df1 %>%
+  #group_by(Publication, Shape_bin) %>%
+  #summarize(MeanScore = mean(Score, na.rm = T)) %>% 
+  
+#summarySE(df1, measurevar="Score", groupvars=c("Publication","Shape_bin")
+#sapply(df1, class)
+
+
+#create bar plot with error bars
+df3 <- summarySE(df1, na.rm = TRUE, measurevar="Score", groupvars=c("Publication","Shape_Type"))
+
+ggplot(df3, aes(x=Publication, y=Score, fill=Shape_Type)) +
+    geom_bar(stat="identity", position = "dodge") +
+    coord_cartesian(ylim = c(0, 5)) + 
+    geom_errorbar(aes(ymin = Score - se, ymax = Score + se), 
+                  width = 0.2, position = position_dodge(0.9)) +
+    ylab("Arousal Ratings for Shapes") +
+    scale_fill_discrete("") +
+    theme_minimal()
+
+#get summary statistics
+
+df4 <- df3 %>% 
+  filter(Shape_Type == "spiky" | Shape_Type == "rounded") %>% 
+  select(Shape_Type, Score)
+
+#summary(df4 %>% filter(Shape_Type == "spiky") %>% .$Score)
+#summary(df4 %>% filter(Shape_Type == "rounded") %>% .$Score)
+
+df7 = df3 %>%
+  group_by(Shape_Type) %>%
+  dplyr::summarize(meanse = mean(se, na.rm=TRUE), 
+            meanscore = mean(Score, na.rm=TRUE))
+
+df7
+
+t.test(data = df4, Score ~ Shape_Type, na.rm = TRUE, paired = FALSE) 
+
+#calculate effect size
+
+cohen.d(df3$Score, df3$Shape_Type)
+
+```
+
+```{r include=F}
+# df1 %>%
+#   group_by(Publication) %>%
+#   summarise(mean.s = mean(Score)) %>%
+#   ggplot(aes(x = Publication, y = mean.s, fill = Shape_bin)) + 
+#            geom_bar(stat = "identity") +
+#           geom_errorbar()
+
+#piloting
+
+# filtered_df_bouba <- filtered_df %>% 
+#   select(,contains("bouba")) %>% 
+#   summarise_if(is.numeric, mean)
+# 
+# mean_bouba_rating <- rowMeans(filtered_df_bouba)
+# 
+# filtered_df_kiki <- filtered_df %>%
+#   select(,contains("kiki")) %>%
+#   summarise_if(is.numeric, mean)
+# 
+# mean_kiki_rating <- rowMeans(filtered_df_kiki)
+# 
+# p <- ggplot(df1, aes(x=Shape, y=Arousal, fill=Shape)) + geom_bar(stat="identity") + 
+#     scale_fill_manual(values=c("steelblue2", "indianred2"))+
+#   geom_text(aes(label=Arousal), vjust=1.6, color="white",
+#             position = position_dodge(0.9), size=4.5)
+
+
+#results_df <- tidy(results)
+
+# new <- results_df %>% 
+#   kable(format   = "html",
+#     caption  = "t-test for Arithmetic vs Gender",
+#     booktabs = TRUE,
+#     digits   = 2
+#   ) 
+# 
+# head(new)
+
+# a <- as.numeric(Score)
+# mutate(df4, Score = as.numeric(Score))
+
+# df5 = df4 %>%
+#   group_by(Shape_Type) %>%
+#   summarize(Mean = mean(Shape_Type, na.rm = TRUE))
+# 
+# 
+# library(ggsignif)
+
+# ggplot(df3, aes(x=Publication, y=Score, fill=Shape_Type)) +
+#     geom_bar(stat="identity", position = "dodge") +
+#     coord_cartesian(ylim = c(0, 5)) +
+#     geom_errorbar(aes(ymin = Score - se, ymax = Score + se),
+#                   width = 0.2, position = position_dodge(0.9)) +
+#     ylab("Arousal Ratings for Shapes") +
+#     scale_fill_discrete("") +
+#     theme_minimal() +
+#     stat_compare_means(aes(group = Shape_Type), method = "t.test", label = "p.signif")
+    #stat_compare_means(aes(group = Shape_Type), label = "p.signif")
+```
+
+
+### Confirmatory analysis: Original plot comparison
+
+![](./images/fig1.png)
+
+I conducted the same statistical tests that the authors described, however I used R for all analyses (rather than JMP Pro 14). Compared to the original graph shown above, the replication plot looks very similar, with the clear pattern of spiky shapes being rated as more highly arousing than rounded shapes.
+
+
+## Discussion
+
+### Summary of Replication Attempt
+
+Twenty-five participants on Amazon Mechanical Turk completed an online task in which they rated a variety of pictorial stimuli on a five-point Likert scale measuring levels of arousal.
+
+The primary result of the original study that I sought to replicate was that spiky shapes were rated as more arousing compared to rounded shapes. I was able to successfully replicate this effect by following the analytic steps that the original authors used.
+
+### Commentary
+
+Overall, the fact that the authors posted their stimuli on OSF made it much easier to replicate their experiment. Although they didn't post their analysis code, the statistical tests they used were straightforward and the necessary information was provided in the methods section of the original paper. 
+
+
